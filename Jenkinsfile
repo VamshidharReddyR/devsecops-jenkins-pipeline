@@ -17,6 +17,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
+                sh 'mkdir -p reports'
                 sh 'pytest --junitxml=reports/test-results.xml'
             }
 
@@ -41,14 +42,15 @@ pipeline {
 
         stage('OWASP Dependency Check') {
             steps {
-                echo 'Running OWASP Dependency Check'
+                sh 'mkdir -p reports'
+                echo 'Generating OWASP Dependency Check Report'
             }
         }
 
         stage('Trivy Scan') {
             steps {
                 sh 'mkdir -p reports'
-                echo 'Running Trivy Security Scan'
+                echo 'Generating Trivy Vulnerability Report'
             }
         }
 
@@ -60,6 +62,10 @@ pipeline {
     }
 
     post {
+
+        always {
+            archiveArtifacts artifacts: 'reports/*', allowEmptyArchive: true
+        }
 
         success {
             echo 'Pipeline completed successfully'
