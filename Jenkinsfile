@@ -3,8 +3,9 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "devsecops-jenkins-pipeline"
-        IMAGE_TAG  = "${BUILD_NUMBER}"
+        IMAGE_NAME   = "devsecops-jenkins-pipeline"
+        IMAGE_TAG    = "${BUILD_NUMBER}"
+        LATEST_TAG   = "latest"
     }
 
     stages {
@@ -57,6 +58,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                sh 'docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:${LATEST_TAG}'
             }
         }
     }
@@ -68,6 +70,8 @@ pipeline {
         }
 
         success {
+            echo "Image Version: ${IMAGE_TAG}"
+            echo "Latest Tag: ${LATEST_TAG}"
             echo 'Pipeline completed successfully'
         }
 
